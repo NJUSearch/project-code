@@ -1,0 +1,41 @@
+Metadata-Version: 2.1
+Name: lazy-py2neo
+Version: 2019.3.7
+Summary: # lazy_py2neo
+Requires-Dist: py2neo (<4,>3)
+
+Wrapper around py2neo returning Futures, helping support multiple concurrent database queries
+
+**Note: This package has only been tested with py2neo version 3**
+
+Drop in replacement for ``py2neo.Graph``:
+```python
+from py2neo import Graph
+```
+becomes
+```python
+from lazy_py2neo import Graph
+```
+
+After changing the import, calls that should return a ``Future`` can be 
+modified like this:
+```python
+graph = Graph()
+result = graph.evaluate("MATCH (node) RETURN COUNT(node)")
+# result is a dict
+```
+becomes
+```python
+graph = Graph()
+result = graph.evaluate("MATCH (node) RETURN COUNT(node)", as_future=True)
+# result is a Future
+evaluated_result = result.result()
+# evaluated_result is a dict
+```
+
+Home-page: UNKNOWN
+Author: Bart Broere
+Author-email: UNKNOWN
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN

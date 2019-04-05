@@ -1,0 +1,229 @@
+Metadata-Version: 2.1
+Name: py2neo-compat
+Version: 1.0.1
+Summary: Compatibility layer for py2neo
+Home-page: https://github.com/wcooley/py2neo_compat
+Author: Wil Cooley
+Author-email: wcooley@nakedape.cc
+License: Apache Software License 2.0
+Keywords: py2neo_compat py2neo compat neo4j
+Platform: UNKNOWN
+Classifier: Development Status :: 2 - Pre-Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Description-Content-Type: text/x-rst
+Provides-Extra: test
+Requires-Dist: boltons
+Requires-Dist: py2neo (<=2.999,>=1.6)
+Requires-Dist: six
+Requires-Dist: typing
+Provides-Extra: test
+Requires-Dist: coverage; extra == 'test'
+Requires-Dist: pytest (>=3.3.0); extra == 'test'
+Requires-Dist: pytest-cov; extra == 'test'
+Requires-Dist: pytest-forked; extra == 'test'
+Requires-Dist: pytest-mock; extra == 'test'
+
+=============
+py2neo_compat
+=============
+
+
+.. image:: https://img.shields.io/pypi/v/py2neo_compat.svg
+        :target: https://pypi.python.org/pypi/py2neo_compat
+
+..
+    .. image:: https://img.shields.io/travis/wcooley/py2neo_compat.svg
+            :target: https://travis-ci.org/wcooley/py2neo_compat
+
+..
+    .. image:: https://readthedocs.org/projects/py2neo-compat/badge/?version=latest
+            :target: https://py2neo-compat.readthedocs.io/en/latest/?badge=latest
+            :alt: Documentation Status
+
+..
+    .. image:: https://pyup.io/repos/github/wcooley/py2neo_compat/shield.svg
+         :target: https://pyup.io/repos/github/wcooley/py2neo_compat/
+         :alt: Updates
+
+
+Description
+-----------
+A (probably vain) attempt to create a cross-version compatibility layer for
+py2neo_.
+
+
+Purpose
+-------
+Every major release of py2neo has radically (and gratuitously, it seems)
+changed the API: package/module organization, name of the database connection
+class, facilities for working with nodes & relationships -- not to mention
+more complicated features like interacting with schema.
+
+What is implemented here is a hodgepodge of monkey-patches and other hacks
+to make things work between v1.6 and v2.
+
+
+Background
+----------
+At work I inherited a codebase developed around py2neo v1.6, and data access
+was intricately tied with business logic.
+Tests were scarce and what tests existed were system tests that did not
+address errors, boundary conditions, etc., so updating every use of py2neo
+for a new version would be very risky.
+(Not to mention that I was just learning py2neo & Neo4j.)
+
+My initial plan was to upgrade to py2neo v2 (current at the time)
+incrementally by monkey-patching & renaming to make v1.6 able to be used as
+if it were v2 and when the code had all been changed to use v2, upgrade to
+py2neo v2.
+Along the way I had the opportunity to develop a new, stand-alone
+application, so I started out creating a new dist for the application and
+developing some libraries that could be shared with legacy system, so I
+created a separate dist for the shared libraries.
+I did not want to develop the new application with the old v1.6, so my shared
+library would need to support both v1.6 and v2.
+I also started a separate project called gryaml_, to load sample data from
+YAML files, which also needed to support multiple versions in order to be
+run as test fixtures.
+
+
+Features
+--------
+
+* Implementation-independent names, optionally monkey-patched into the
+  ``py2neo`` namespace and classes upon call to
+  ``py2neo_compat.monkey_patch_py2neo``:
+
+  * ``Graph``
+
+    * ``Graph.create_unique`` (only single path)
+    * ``Graph.cypher.stream``
+    * ``Graph.cypher.execute``
+    * ``Graph.delete_all``
+    * ``Graph.find_one``
+    * ``Graph.legacy.delete_index``
+    * ``Graph.legacy.get_*index*``
+    * ``Graph.resource``
+    * ``Graph.uri``
+
+  * ``Node``
+
+    * ``Node.labels`` property (get-only)
+    * ``Node.pull`` method (aliased to ``refresh`` in v1)
+    * ``Node.push`` method (aliased to ``refresh`` in v1)
+
+  * ``Relationship``
+
+    * ``Relationship.push`` method (aliased to ``refresh`` in v1)
+    * ``Relationship.pull`` method (aliased to ``refresh`` in v1)
+
+  * ``Record``
+  * ``node``
+  * ``rel``
+  * ``ServerError``
+  * ``ClientError``
+  * ``URI``
+  * ``Resource``
+
+  * ``py2neo.legacy.LegacyWriteBatch``
+  * ``py2neo.legacy.Index``
+  * ``py2neo.batch.WriteBatch``
+
+* Custom wrapper functions, which are not monkey-patched:
+
+  * ``py2neo_compat``
+
+    * ``graph_metadata``
+    * ``create_node``
+    * ``py2neo_entity_to_dict`` aka ``to_dict``: Dump the properties of a
+      node or relationship as a ``dict``.
+
+  * ``schema``:
+
+    * ``schema_constraints`` - Yields tuples of schema constraints for
+      *all* constraints (not just ones in use).
+    * ``schema_indexes`` - Yields tuples of schema indexes for *all*
+      indexes (not just ones in use).
+    * ``drop_schema``
+    * ``drop_constraints``
+    * ``drop_indexes``
+    * ``create_schema``
+
+
+* Known limitations:
+
+  * py2neo v1.6 will not create labels with an abstract ``Node``.
+  * There is no common way to modify labels after node creation; v1 uses
+    special methods to manipulate the labels, whereas v2 uses a a subclass
+    of ``set``. The easy way would be to add the v1 methods to v2, but I
+    am trying to avoid propagating the v1 API; the harder way would be to
+    implement a set-like class for v1, but considerably more work. Another
+    alternative is a compatibility function, which ends up being another
+    API. I have not really needed to manipulate labels after creation.
+
+* Free software: Apache Software License 2.0
+
+.. * Documentation: https://py2neo-compat.readthedocs.io.
+    TBD
+
+
+Future
+------
+
+For future development, I am considering several options:
+
+* Attempt to do just enough to support v3 and ignore v4.
+* Ignore v3 and reimplement the features I need on v4.
+* Ignore v3 and v4 altogether and build what I need on v2 and the
+  `Bolt-only Python driver`_.
+
+Approaches other than monkey-patching:
+
+* Instead of monkey-patching, subclass or wrap the appropriate classes
+  and re-implement the differing bits. Clients would import directly from the
+  ``py2neo_compat`` package, rather than importing, calling the monkey-patch
+  function and then importing from ``py2neo``.
+* Adopt a function-based approach, where the receiver is an explicit parameter
+  instead of having methods. This can get redundant, since the type of the
+  primary receiver ends up being embedded in the name.
+
+This would might work better for Nodes and Relationships and the basic
+Graph features than the schema, batch and legacy index support.
+
+
+Credits
+-------
+
+This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
+
+.. _py2neo: http://py2neo.org
+.. _gryaml: https://github.com/wcooley/python-gryaml
+.. _`Bolt-only Python driver`: https://neo4j.com/docs/api/python-driver/current/
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+
+
+=======
+History
+=======
+
+1.0.1 (2018-08-02)
+------------------
+
+* Restrict to only supported py2neo versions with environment-based override for
+  testing with later versions.
+
+1.0.0 (2018-08-01)
+------------------
+
+* First release on PyPI.
+
+

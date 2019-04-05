@@ -1,0 +1,37 @@
+
+#inputBar {
+	margin: 0px 30% 0px 0px;
+}
+
+
+
+#navbar {
+	background: #660066
+}
+
+.p {
+	padding : 20px;
+}
+
+.footer {
+	width: 100%;
+	margin: 0 auto;
+	background: #FFFFFF;
+	bottom: 0px;
+	text-align: center;
+	/*vertical-align: middle;*/
+}
+
+#nav_ul {
+	font-size:200%;
+}
+
+.nav_a {
+	color:white;
+}
+
+
+td {
+	display: table-cell;
+	vertical-align: inherit;
+}
