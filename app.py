@@ -10,13 +10,13 @@ import re
 import search
 
 def rep(word):
-    return '<b>'+word.group(0)+'</b>'
+    return '<span style="color:red">'+word.group(0)+'</span>'
 
 def add_bold_tag(query, text):
     words = query.split(' ')
     words = [a for a in words if a != '']
     p = '|'.join(words)
-    return re.sub(p,rep,text)
+    return re.sub(p,rep,text,flags=re.IGNORECASE)
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
