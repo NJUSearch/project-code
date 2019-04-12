@@ -1,37 +1,36 @@
-
 {% extends "bootstrap/base.html" %}
 
 {% block title %}Programming search{% endblock %}
 
 {% block head %}
-  {{super()}}
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="/static/images/brand.jpg" rel="shortcut icon">
-  <link href="/static/css/index.css" type="text/css" rel="stylesheet" >
-  <!-- <script src="http://cdn.rawgit.com/phi-jp/phina.js/v0.2.0/build/phina.js"></script> -->
+{{super()}}
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="/static/images/brand.jpg" rel="shortcut icon">
+<link href="/static/css/index.css" type="text/css" rel="stylesheet">
+<!-- <script src="http://cdn.rawgit.com/phi-jp/phina.js/v0.2.0/build/phina.js"></script> -->
 {% endblock %}
 
 {% block navbar %}
 <div id="navbar" class="navbar navbar-fixed-top nav" role="navigation">
   <!--<a href="https://www.baidu.com" target="_blank" style="positon:fixed"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>-->
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand nav_a" href="/">
-          Programming search
-        </a>
-      </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav" id="nav_ul">
-          <li style="background:#4285f4;"><a class="nav_a">N</a></li>
-          <li style="background:#ea4335;"><a class="nav_a">J</a></li>
-          <li style="background:#fbbd0b;"><a class="nav_a">U</a></li>
-          <li style="background:#34a853;"><a class="nav_a">C</a></li>
-          <li style="background:#4285f4;"><a class="nav_a">S</a></li>
-<!--          <li style="background:#ea4335;"><a class="nav_a">e</a></li>	-->
-        </ul>
-      </div>
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand nav_a" href="/">
+        Programming search
+      </a>
     </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav" id="nav_ul">
+        <li style="background:#4285f4;"><a class="nav_a">N</a></li>
+        <li style="background:#ea4335;"><a class="nav_a">J</a></li>
+        <li style="background:#fbbd0b;"><a class="nav_a">U</a></li>
+        <li style="background:#34a853;"><a class="nav_a">C</a></li>
+        <li style="background:#4285f4;"><a class="nav_a">S</a></li>
+        <!--          <li style="background:#ea4335;"><a class="nav_a">e</a></li>	-->
+      </ul>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -49,25 +48,25 @@
     <!--<div style="display: inline;">current engine: <span class="label label-success">{{ engine_name }}</span></div>-->
 
     <!--<button class="btn btn-success" id="thumb-btn" type="button" style="float:right;">-->
-       <!--Display thumbnail : On-->
+    <!--Display thumbnail : On-->
     <!--</button>-->
     <!--{% endif %}-->
 
   </div>
 
   <div class="row" id="inputBar" style="margin:0 20%;">
-    <div class="input-group" style="text-align:center" >
+    <div class="input-group" style="text-align:center">
       {% if q %}
-        <input id="inputField" type="text" class="form-control" value = {{ q }}>
+      <input id="inputField" type="text" class="form-control" value={{ q }}>
       {% else %}
-        <input id="inputField" type="text" class="form-control" value = {{ q }}>
+      <input id="inputField" type="text" class="form-control" value={{ q }}>
       {% endif %}
-        <span class="input-group-btn">
-          <button id="searchBtn" class="btn btn-default" type="button">Go!</button>
-        </span>
+      <span class="input-group-btn">
+        <button id="searchBtn" class="btn btn-default" type="button">Go!</button>
+      </span>
     </div>
   </div>
-<!--
+  <!--
   <div class="row" id="inputBar2" style="margin:0 20%;">
     <div class="input-group" style="text-align:center" >
       {% if q %}
@@ -85,87 +84,90 @@
 
   {% if error %}
 
-    <div class="alert alert-warning" role="alert">sorry dude, today's search times was used up, pls try tomorrow</div>
-    <div class="alert alert-danger" role="alert">{{ error_msg }}</div>
+  <div class="alert alert-warning" role="alert">sorry dude, today's search times was used up, pls try tomorrow</div>
+  <div class="alert alert-danger" role="alert">{{ error_msg }}</div>
 
   {% else %}
 
-    {% if search_info %}
-      <div class="alert alert-success" role="alert">{{ search_info }}</div>
-    {% endif %}
+  {% if search_info %}
+  <div class="alert alert-success" role="alert">{{ search_info }}</div>
+  {% endif %}
 
   <div class="row marketing">
-      <div class="col-lg-8" style="word-wrap: break-word;">
-          {% for result in results %}
-            <div class="" style="">
-        <h2><a href = {{ result.link }} target="_blank" >{{ result.title|safe }}</a></h2>
+    <div class="col-lg-8" style="word-wrap: break-word;">
+      {% for result in results %}
+      <div class="" style="">
+        <h2><a href={{ result.link }} target="_blank">{{ result.title|safe }}</a></h2>
         {% if result.snippet %}
-          {% if result.thumbnail %}
-            <div>
-              <div id="{{ result.title }}_tn" style="float:left; width:{{ result.thumbnail.width}}px;">
-                  <a href="{{ result.link }}" target="_blank"><img style="" src={{ result.thumbnail.src }} alt="thumbnail"/></a>
-              </div>
-              <div id="{{ result.title }}_content" style="float:left;height:{{ result.thumbnail.height }}px;position:relative;">
-                <div id="r_snippet" style="margin-left:20px;margin-top:20px;font-size:20px;">{{ result.snippet|safe }}</div>
-                <div id="r_link" style="margin-left:20px;bottom:0;font-size:13px;position:absolute;">{{ result.displayLink|safe }}</div>
-              </div>
-            </div>
-          {% else %}
-            <div id="r_snippet" style="font-size:18px;text">{{ result.snippet|safe }}</div>
-            <div id="r_link" style="font-size:13px;color:#008000">{{ result.displayLink|safe }}</div>
-          {% endif %}
-        {% else %}
-          <div id="r_link" style="font-size:13px;color:#008000">{{ result.displayLink|safe }}</div>
-          <div id="r_tn" style="width:{{ result.thumbnail.width}}px;">
-              <a href="{{ result.link }}" target="_blank"><img src = {{ result.thumbnail.src }} alt="thumbnail"/></a>
+        {% if result.thumbnail %}
+        <div>
+          <div id="{{ result.title }}_tn" style="float:left; width:{{ result.thumbnail.width}}px;">
+            <a href="{{ result.link }}" target="_blank"><img style="" src={{ result.thumbnail.src }}
+                alt="thumbnail" /></a>
           </div>
+          <div id="{{ result.title }}_content"
+            style="float:left;height:{{ result.thumbnail.height }}px;position:relative;">
+            <div id="r_snippet" style="margin-left:20px;margin-top:20px;font-size:20px;">{{ result.snippet|safe }}</div>
+            <div id="r_link" style="margin-left:20px;bottom:0;font-size:13px;position:absolute;">
+              {{ result.displayLink|safe }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div id="r_snippet" style="font-size:18px;text">{{ result.snippet|safe }}</div>
+        <div id="r_link" style="font-size:13px;color:#008000">{{ result.displayLink|safe }}</div>
+        {% endif %}
+        {% else %}
+        <div id="r_link" style="font-size:13px;color:#008000">{{ result.displayLink|safe }}</div>
+        <div id="r_tn" style="width:{{ result.thumbnail.width}}px;">
+          <a href="{{ result.link }}" target="_blank"><img src={{ result.thumbnail.src }} alt="thumbnail" /></a>
+        </div>
         {% endif%}
       </div>
-           {% endfor %}
-      </div>
+      {% endfor %}
+    </div>
 
-      <div class="col-lg-4">
-          <br>
-          {% if tags %}
-          <h3><b>相关术语</b></h3>
-          {% endif %}
-           {% for tag in tags %}
+    <div class="col-lg-4">
+      <br>
+      {% if tags %}
+      <h3><b>相关术语</b></h3>
+      {% endif %}
+      {% for tag in tags %}
 
-            <div class="span4">
-                <!--<h2><a href = {{ tag.link }} target="_blank" >{{ tag.title|safe }}</a></h2>-->
-                <!--<p style="font-size: 25px"> {{tag.snippet |safe}}</p>-->
+      <div class="span4">
+        <!--<h2><a href = {{ tag.link }} target="_blank" >{{ tag.title|safe }}</a></h2>-->
+        <!--<p style="font-size: 25px"> {{tag.snippet |safe}}</p>-->
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h2><a href={{ tag.link }} target="_blank" style="color: black">{{ tag.title|safe }}</a></h2>
-                    </div>
-                    <div class="panel-body">
-                        <p style="font-size: 25px"> {{tag.snippet |safe}}</p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-
-            <br>
-          {% if codes %}
-          <h3><b>相关代码</b></h3>
-          {% endif %}
-             {% for code in codes %}
-
-          <div class="panel panel-default">
-              <div class="panel-heading">
-                  <h2><a href={{ code.link }} target="_blank" style="color: black">{{ code.title|safe }}</a></h2>
-              </div>
-              <div class="panel-body">
-                  <p style="font-size: 25px"> {{code.snippet |safe}}</p>
-              </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3><a href={{ tag.link }} target="_blank" style="color: black">{{ tag.title|safe }}</a></h3>
           </div>
-
-            {% endfor %}
-
-
-
+          <div class="panel-body">
+            <p style="font-size: 20px"> {{tag.snippet |safe}}</p>
+          </div>
+        </div>
       </div>
+      {% endfor %}
+
+      <br>
+      {% if codes %}
+      <h3><b>相关代码</b></h3>
+      {% endif %}
+      {% for code in codes %}
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3><a href={{ code.link }} target="_blank" style="color: black">{{ code.title|safe }}</a></h3>
+        </div>
+        <div class="panel-body">
+          <p style="font-size: 20px"> {{code.snippet |safe}}</p>
+        </div>
+      </div>
+
+      {% endfor %}
+
+
+
+    </div>
   </div>
 
 
@@ -202,19 +204,20 @@
 <div class="footer" id="footer">
   <div class="container">
     <br>
-    <p >Contact us on<a href="https://github.com/NJUSearch" target="_blank">@Github</a></p>
-    <p >Powered by  <a href="http://flask.pocoo.org/" target="_blank">Flask</a> and <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></p>
+    <p>Contact us on<a href="https://github.com/NJUSearch" target="_blank">@Github</a></p>
+    <p>Powered by <a href="http://flask.pocoo.org/" target="_blank">Flask</a> and <a href="http://getbootstrap.com/"
+        target="_blank">Bootstrap</a></p>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-  {{super()}}
-  <script type="text/javascript" src="/static/js/index.js"></script>
-  <script type="text/javascript">
+{{super()}}
+<script type="text/javascript" src="/static/js/index.js"></script>
+<script type="text/javascript">
   $(document).ready(function () {
     // $("#content").empty();
   });
-  </script>
+</script>
 
 {% endblock %}
