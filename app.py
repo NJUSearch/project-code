@@ -9,6 +9,8 @@ import re
 
 import search
 
+
+
 def rep(word):
     return '<span style="color:red">'+word.group(0)+'</span>'
 
@@ -20,11 +22,11 @@ def add_bold_tag(query, text):
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-passwd = "123456"
+passwd = ""
 graph = Graph("http://localhost:7474", username="neo4j", password=passwd)
 
 db = pymysql.connect(host='localhost', port=3306, user='root',
-                             passwd="980306", database='resource')
+                             passwd=passwd, database='')
 cursor = db.cursor()
 
 @app.route('/')
@@ -38,6 +40,7 @@ def query():
         has_result = 0
         error = 0
         key_word = request.args.get('q')
+        offset = request.args.get('offset')
         start_index = request.args.get('start')
         # read engineID
         f = open('data/engine.json')
@@ -63,7 +66,7 @@ def query():
 
         # results
 
-        for item in search.get_QA(graph,key_word):
+        for item in search.get_QA(graph,key_word,int(offset)):
               result = {"title": add_bold_tag(key_word,item[0]),
                        "link": 'https://stackoverflow.com/questions/'+str(item[2]),
                        "displayLink": 'https://stackoverflow.com/questions/'+str(item[2]),
