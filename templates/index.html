@@ -44,13 +44,6 @@
       <img src="/static/images/logo.jpg" alt="Project Logo" width=20%>
     </p>
 
-    <!--{% if engine_name %}-->
-    <!--<div style="display: inline;">current engine: <span class="label label-success">{{ engine_name }}</span></div>-->
-
-    <!--<button class="btn btn-success" id="thumb-btn" type="button" style="float:right;">-->
-    <!--Display thumbnail : On-->
-    <!--</button>-->
-    <!--{% endif %}-->
 
   </div>
 
@@ -66,20 +59,7 @@
       </span>
     </div>
   </div>
-  <!--
-  <div class="row" id="inputBar2" style="margin:0 20%;">
-    <div class="input-group" style="text-align:center" >
-      {% if q %}
-        <input id="inputField2" type="text" class="form-control" value = {{ q }}>
-      {% else %}
-        <input id="inputField2" type="text" class="form-control">
-      {% endif %}
-        <span class="input-group-btn">
-          <button id="searchBtn2" class="btn btn-default" type="button">!</button>
-        </span>
-    </div>
-  </div>
--->
+
   <br><br>
 
   {% if error %}
@@ -167,47 +147,27 @@
 
     </div>
 
-
+<!--<span style="height:40px;display:block;width:71px;float:right;">-->
   </div>
     {% if results %}
       <div>
           <table style="border-collapse:collapse;text-align:left;margin:30px auto 30px" id="pager" role="presentation">
               <tbody>
+              {% if has_previous %}
               <td class="previous"><a href="/query?q={{ q }}&offset={{ offset-10 }}">previous</a></td>
+              {% endif %}
+              <td>&nbsp;&nbsp;Page {{ page_index }}&nbsp;&nbsp;</td>
+              {% if has_next %}
               <td class="next"><a href="/query?q={{ q }}&offset={{ offset+10 }}">next</a></td>
+              {% endif %}
               </tbody>
           </table>
       </div>
     {% endif %}
 
-
-
-
-
   {% endif %}
 </div>
 
-<!--
-{% if results %}
-<div class="navcnt">
-  <table style="border-collapse:collapse;text-align:left;margin:30px auto 30px" id="pager" role="presentation">
-    <tbody>
-      <tr valign="top">
-        {% if has_previous %}
-          <td class="previous"><a href="/query?q={{ q }}&start={{ current_start_index-10 }}"><span style="height:40px;display:block;background:url(/static/images/branding/nav_logo.png) no-repeat;background-position:0 0;width:53px;float:right"></span><span style="display:block;clear:right;">previous</span></a></td>
-        {% else %}
-          <td class="previous"><span style="height:40px;display:block;background:url(/static/images/branding/nav_logo.png) no-repeat;background-position:-24px 0;width:28px;float:right;"></span><span style="display:block;clear:right"></span></td>
-        {% endif %}
-        <td><span style="height:40px;display:block;background:url(/static/images/branding/nav_logo.png) no-repeat;background-position:-53px 0;width:20px;"></span></td>
-        <td><span style="height:40px;display:block;background:url(/static/images/branding/nav_logo.png) no-repeat;background-position:-74px 0;width:20px;"></span>Page {{ page_index }}</td>
-        <td class="next"><a href="/query?q={{ q }}&start={{ current_start_index+10 }}"><span style="height:40px;display:block;background:url(/static/images/branding/nav_logo.png) no-repeat;background-position:-96px 0;width:71px;float:right;"></span><span style="display:block;clear:right;margin-left:50px;">next</span></a></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-{% endif %}
--->
-<!-- <script src='/static/js/piko.js'></script> -->
 
 <div class="footer" id="footer">
   <div class="container">

@@ -41,8 +41,17 @@ def query():
         error = 0
         key_word = request.args.get('q')
         offset = request.args.get('offset')
-        start_index = request.args.get('start')
+        #start_index = request.args.get('start')
         offset=request.args.get('offset')
+        offset=int(offset)
+        page_index=int(offset/10+1)
+
+        #是否能往前翻
+        if 1==page_index:
+            has_previous=0
+        else:
+            has_previous=1
+
         # read engineID
         f = open('data/engine.json')
         s = json.load(f)
@@ -75,6 +84,10 @@ def query():
                        }
               results.append(result)
 
+        #是否能往后翻
+        length=len(results)
+        has_next=1
+        print(length)
         # codes
         for item in search.get_question(cursor, key_word):
             code = {"title": add_bold_tag(key_word,item[0]),
@@ -86,8 +99,8 @@ def query():
 
         return render_template('index.html', q=key_word, results=results,tags=tags,codes=codes,
                                error=error, engine_name=engine_name,
-                               search_info='', has_previous=False,
-                               current_start_index=1, page_index=1,offset=int(offset))
+                               search_info='', has_previous=has_previous,has_next=has_next,
+                               page_index=page_index,offset=offset)
         # else:
         # search_info = 'About ' + json_data['searchInformation']['formattedTotalResults'] + ' results (' + \
         #               json_data['searchInformation']['formattedSearchTime'] + ' seconds)'
@@ -103,26 +116,6 @@ def query():
     # response = requests.request("GET", url, params=query_string)
     # json_data = json.loads(response.text)
 
-    # try :
-    #     # case 1: results
-    #     if json_data['items']:
-    #         has_result = 1
-    #         break
-    # except :
-    #     # case 2: error
-    #     try :
-    #         json_data['error']
-    #         if i == len(s['engine'])-1:
-    #             error = 1
-    #             # print json_data
-    #             error_msg = 'error_code' +str(json_data['error']['code'])
-    #             return render_template('index.html',q=q,error=error,error_msg=error_msg,engine_name=engine_name)
-    #         else :
-    #             continue
-    #     # case 3: no result
-    #     except :
-    #         break
-
     # if has_result == 1 :
     #     # print "results"
     #     result = []
@@ -137,12 +130,7 @@ def query():
     #     else :
     #         has_previous = 1
     #         search_info =  "Page " + str(current_start_index/10+1) + ' of About ' + json_data['searchInformation']['formattedTotalResults'] + ' results (' + json_data['searchInformation']['formattedSearchTime'] + ' seconds)'
-    #     # print(items)
-    #      print(q)
-    # print(result)
-    # print(error)
-    # print(engine_name)
-    # print(search_info)
+
 
 
 @app.errorhandler(404)

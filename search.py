@@ -34,6 +34,7 @@ def word_filter(input_str):
     return filtered_words
 
 
+#tags
 def get_desc(graph, key_word):
     Line()
     # print("(Input 'back' for return)")
@@ -84,7 +85,7 @@ def get_desc(graph, key_word):
     for n in range(0, len(tag_list)):   #将每个tag描述和其检索权值组合成序对
         tuple.append((tag_list[n], desc_list[n], weight[n]))
     tuple = sorted(tuple, key=lambda w: w[2], reverse=True) #按照权值降序排序
-    return tuple[:20]
+    return tuple[:5]
 
     #print(tuple)
     #print(tuple[0][0])
@@ -119,6 +120,7 @@ def get_desc(graph, key_word):
     # order = '1'
     # return order
 
+#results
 def get_QA(graph,key_word,offset):
     Line()
     print("(Input 'back' for return)")
@@ -127,7 +129,7 @@ def get_QA(graph,key_word,offset):
     #     order = ''
     #     return order
     if key_word in buffer:
-        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+10,len(buffer[key_word]))]
     else:
         instr = """
                 MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + key_word + """.*'
@@ -175,7 +177,7 @@ def get_QA(graph,key_word,offset):
             tuple.append((title_list[n], body_list[n], id_list[n], weight[n]))
         tuple = sorted(tuple, key=lambda w: w[3], reverse=True)  # 按照权值降序排序
         buffer[key_word] = tuple
-        return tuple[min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+        return tuple[min(offset,len(buffer[key_word])):min(offset+10,len(buffer[key_word]))]
 
 
     # for n in range(0, len(tuple)):
@@ -239,6 +241,7 @@ def get_QA(graph,key_word,offset):
     # order = '2'
     # return order
 
+#codes
 def get_question(cursor, key_word):
     Line()
     print("(Input 'back' for return)")
@@ -277,7 +280,7 @@ def get_question(cursor, key_word):
     for n in range(0, len(question_list)):
         tuple.append((question_list[n], language_list[n], weight[n]))
     tuple = sorted(tuple, key=lambda w: w[2], reverse=True)  # 按照权值降序排序
-    return tuple[:20]
+    return tuple[:5]
 
     # for n in range(0, len(tuple)):
     #     if (n >= 10):
