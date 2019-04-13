@@ -4,8 +4,9 @@ import re
 import nltk
 from nltk.corpus import stopwords
 
-username = "neo4j"
-passwd = "16678qh14522Ur"	#此处填写数据库连接密码
+username = ""
+passwd = ""	#此处填写数据库连接密码
+buffer = {}
 
 def Line():
     print("-----------------------------------------")
@@ -118,60 +119,64 @@ def get_desc(graph, key_word):
     # order = '1'
     # return order
 
-def get_QA(graph,key_word):
+def get_QA(graph,key_word,offset):
     Line()
     print("(Input 'back' for return)")
     # key_word = input("Please input your key word: ")
     # if (key_word == 'back'):
     #     order = ''
     #     return order
-
-    instr = """
-        MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + key_word + """.*'
-        RETURN b.question_title as title, b.question_body as body, b.question_id as id
-    """
-    data = graph.run(instr)
-    title_list = []
-    body_list = []
-    id_list = []
-    weight = []
-    for i in data:
-        #print(str(count) + ': ')
-        #print(i['title'])
-        title_list.append(i['title'])
-        body_list.append(i['body'])
-        id_list.append(i['id'])
-        weight.append(1)
-
-    if (len(title_list) <= 0):
-        word_list = word_filter(key_word)#.split()  # 将输入语句拆分，
-        for word in word_list:  # 每个词分别搜索
-            instr = """
-                MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + word + """.*'
+    if key_word in buffer:
+        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+    else:
+        instr = """
+                MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + key_word + """.*'
                 RETURN b.question_title as title, b.question_body as body, b.question_id as id
             """
-            data = graph.run(instr)
-            for i in data:
-                t = i['title']
-                if t in title_list:   #如果匹配项已经在列表中
-                    weight[title_list.index(t)]+=1    #给其对应权值加一
-                else:
-                    title_list.append(t)  #否则，将新的项加入列表
-                    body_list.append(i['body'])
-                    id_list.append(i['id'])
-                    weight.append(1)
+        data = graph.run(instr)
+        title_list = []
+        body_list = []
+        id_list = []
+        weight = []
+        for i in data:
+            # print(str(count) + ': ')
+            # print(i['title'])
+            title_list.append(i['title'])
+            body_list.append(i['body'])
+            id_list.append(i['id'])
+            weight.append(1)
 
-    #print(title_list)
-    #print(body_list)
-    #print(weight)
-    tuple = []
-    print(len(title_list))
-    print(len(body_list))
-    print(len(id_list))
-    for n in range(0, len(title_list)):
-        tuple.append((title_list[n], body_list[n], id_list[n], weight[n]))
-    tuple = sorted(tuple, key=lambda w: w[3], reverse=True)  # 按照权值降序排序
-    return tuple[:20]
+        if (len(title_list) <= 0):
+            word_list = word_filter(key_word)  # .split()  # 将输入语句拆分，
+            for word in word_list:  # 每个词分别搜索
+                instr = """
+                        MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + word + """.*'
+                        RETURN b.question_title as title, b.question_body as body, b.question_id as id
+                    """
+                data = graph.run(instr)
+                for i in data:
+                    t = i['title']
+                    if t in title_list:  # 如果匹配项已经在列表中
+                        weight[title_list.index(t)] += 1  # 给其对应权值加一
+                    else:
+                        title_list.append(t)  # 否则，将新的项加入列表
+                        body_list.append(i['body'])
+                        id_list.append(i['id'])
+                        weight.append(1)
+
+        # print(title_list)
+        # print(body_list)
+        # print(weight)
+        tuple = []
+        print(len(title_list))
+        print(len(body_list))
+        print(len(id_list))
+        for n in range(0, len(title_list)):
+            tuple.append((title_list[n], body_list[n], id_list[n], weight[n]))
+        tuple = sorted(tuple, key=lambda w: w[3], reverse=True)  # 按照权值降序排序
+        buffer[key_word] = tuple
+        return tuple[min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+
 
     # for n in range(0, len(tuple)):
     #     if (n >= 10):
