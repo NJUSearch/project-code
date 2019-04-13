@@ -30,7 +30,7 @@ function search() {
 		var  entry = { "'": "&apos;", '"': '&quot;', '<': '&lt;', '>': '&gt;' };
 		q = q.replace(/(['")-><&\\\/\.])/g, function ($0) { return entry[$0] || $0; });
 
-		var string = '/query?q=' + q;
+		var string = '/query?q='+q+'&offset=0';
 		location.href = string;
 	};
 
