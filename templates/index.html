@@ -165,16 +165,20 @@
 
       {% endfor %}
 
-
-
     </div>
 
-      <div>
-          <a href=>
-      </div>
+
   </div>
-
-
+    {% if results %}
+      <div>
+          <table style="border-collapse:collapse;text-align:left;margin:30px auto 30px" id="pager" role="presentation">
+              <tbody>
+              <td class="previous"><a href="/query?q={{ q }}&offset={{ offset-10 }}">previous</a></td>
+              <td class="next"><a href="/query?q={{ q }}&offset={{ offset+10 }}">next</a></td>
+              </tbody>
+          </table>
+      </div>
+    {% endif %}
 
 
 

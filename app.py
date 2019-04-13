@@ -22,11 +22,11 @@ def add_bold_tag(query, text):
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-passwd = ""
+passwd = "123456"
 graph = Graph("http://localhost:7474", username="neo4j", password=passwd)
 
 db = pymysql.connect(host='localhost', port=3306, user='root',
-                             passwd=passwd, database='')
+                             passwd="980306", database='resource')
 cursor = db.cursor()
 
 @app.route('/')
@@ -42,6 +42,7 @@ def query():
         key_word = request.args.get('q')
         offset = request.args.get('offset')
         start_index = request.args.get('start')
+        offset=request.args.get('offset')
         # read engineID
         f = open('data/engine.json')
         s = json.load(f)
@@ -86,7 +87,7 @@ def query():
         return render_template('index.html', q=key_word, results=results,tags=tags,codes=codes,
                                error=error, engine_name=engine_name,
                                search_info='', has_previous=False,
-                               current_start_index=1, page_index=1)
+                               current_start_index=1, page_index=1,offset=int(offset))
         # else:
         # search_info = 'About ' + json_data['searchInformation']['formattedTotalResults'] + ' results (' + \
         #               json_data['searchInformation']['formattedSearchTime'] + ' seconds)'
