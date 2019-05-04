@@ -24,7 +24,7 @@ def find_tag(file, writer):
     (filepath, filename) = os.path.split(file)
     for w in filtered_words:
         if w.lower() in tag_list:   #注意，由于tag全部为小写，在比较也前要将文本词语转为小写
-            writer.writerow((filename, w))  #以“文件名+tag名”的形式写入csv数据文件
+            writer.writerow((filename, w.lower()))  #以“文件名+tag名”的形式写入csv数据文件
 
 
 def search_file(file, writer):
