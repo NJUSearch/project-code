@@ -75,31 +75,31 @@
 
   <div class="row marketing">
     <div class="col-lg-8" style="word-wrap: break-word;">
-      {% for result in results %}
+      {% for code in codes %}
       <div class="" style="">
-        <h2><a href={{ result.link }} target="_blank">{{ result.title|safe }}</a></h2>
-        {% if result.snippet %}
-        {% if result.thumbnail %}
+        <h2><a href={{ code.link }} target="_blank">{{ code.title|safe }}</a></h2>
+        {% if code.snippet %}
+        {% if code.thumbnail %}
         <div>
-          <div id="{{ result.title }}_tn" style="float:left; width:{{ result.thumbnail.width}}px;">
-            <a href="{{ result.link }}" target="_blank"><img style="" src={{ result.thumbnail.src }}
+          <div id="{{ code.title }}_tn" style="float:left; width:{{ result.thumbnail.width}}px;">
+            <a href="{{ code.link }}" target="_blank"><img style="" src={{ code.thumbnail.src }}
                 alt="thumbnail" /></a>
           </div>
-          <div id="{{ result.title }}_content"
-            style="float:left;height:{{ result.thumbnail.height }}px;position:relative;">
-            <div id="r_snippet" style="margin-left:20px;margin-top:20px;font-size:20px;">{{ result.snippet|safe }}</div>
+          <div id="{{ code.title }}_content"
+            style="float:left;height:{{ code.thumbnail.height }}px;position:relative;">
+            <div id="r_snippet" style="margin-left:20px;margin-top:20px;font-size:20px;">{{ code.snippet|safe }}</div>
             <div id="r_link" style="margin-left:20px;bottom:0;font-size:13px;position:absolute;">
-              {{ result.displayLink|safe }}</div>
+              {{ code.displayLink|safe }}</div>
           </div>
         </div>
         {% else %}
-        <div id="r_snippet" style="font-size:18px;text">{{ result.snippet|safe }}</div>
-        <div id="r_link" style="font-size:13px;color:#008000">{{ result.displayLink|safe }}</div>
+        <div id="r_snippet" style="font-size:18px;text">{{ code.snippet|safe }}</div>
+        <div id="r_link" style="font-size:13px;color:#008000">{{ code.displayLink|safe }}</div>
         {% endif %}
         {% else %}
-        <div id="r_link" style="font-size:13px;color:#008000">{{ result.displayLink|safe }}</div>
+        <div id="r_link" style="font-size:13px;color:#008000">{{ code.displayLink|safe }}</div>
         <div id="r_tn" style="width:{{ result.thumbnail.width}}px;">
-          <a href="{{ result.link }}" target="_blank"><img src={{ result.thumbnail.src }} alt="thumbnail" /></a>
+          <a href="{{ result.link }}" target="_blank"><img src={{ code.thumbnail.src }} alt="thumbnail" /></a>
         </div>
         {% endif%}
       </div>
@@ -107,6 +107,23 @@
     </div>
 
     <div class="col-lg-4">
+      <br>
+      {% if results %}
+      <h3><b>相关问答</b></h3>
+      {% endif %}
+      {% for result in results %}
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3><a href={{ result.link }} target="_blank" style="font-size: 18px;color: black">{{ result.title|safe }}</a></h3>
+        </div>
+        <div class="panel-body">
+          <p style="font-size: 12px"> {{result.snippet |safe}}</p>
+        </div>
+      </div>
+
+      {% endfor %}
+
       <br>
       {% if tags %}
       <h3><b>相关术语</b></h3>
@@ -119,30 +136,13 @@
 
         <div class="panel panel-default">
           <div class="panel-heading">
-            <h3><a href={{ tag.link }} target="_blank" style="color: black">{{ tag.title|safe }}</a></h3>
+            <h3><a href={{ tag.link }} target="_blank" style="font-size: 18px；color: black">{{ tag.title|safe }}</a></h3>
           </div>
           <div class="panel-body">
-            <p style="font-size: 20px"> {{tag.snippet |safe}}</p>
+            <p style="font-size: 12px"> {{tag.snippet |safe}}</p>
           </div>
         </div>
       </div>
-      {% endfor %}
-
-      <br>
-      {% if codes %}
-      <h3><b>相关代码</b></h3>
-      {% endif %}
-      {% for code in codes %}
-
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3><a href={{ code.link }} target="_blank" style="color: black">{{ code.title|safe }}</a></h3>
-        </div>
-        <div class="panel-body">
-          <p style="font-size: 20px"> {{code.snippet |safe}}</p>
-        </div>
-      </div>
-
       {% endfor %}
 
     </div>

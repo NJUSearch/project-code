@@ -76,30 +76,32 @@ def query():
 
         # results
 
-        for item in search.get_QA(graph,key_word,int(offset)):
+        for item in search.get_QA(graph,key_word):
               result = {"title": add_bold_tag(key_word,item[0]),
                        "link": 'https://stackoverflow.com/questions/'+str(item[2]),
                        "displayLink": 'https://stackoverflow.com/questions/'+str(item[2]),
-                       "snippet":add_bold_tag(key_word,item[1][:400])
+                       "snippet":add_bold_tag(key_word,item[1][:200])# 描述字段的长度
                        }
               results.append(result)
 
         #是否能往后翻
-        length=len(results)
+        length=[]
         has_next=1
-        print(length)
+
         # codes
-        for item in search.get_question(cursor, key_word):
+        for item in search.get_question(cursor, key_word,int(offset),length):
             code = {"title": add_bold_tag(key_word,item[0]),
                       "link": 'http://rosettacode.org/wiki/'+str(item[0])+'#'+str(item[1]),
                       "displayLink": 'http://rosettacode.org/wiki/'+str(item[0])+'#'+str(item[1]),
                       "snippet": add_bold_tag(key_word,item[1])
                       }
             codes.append(code)
+        if offset+9>=length[0]:
+            has_next=0;
 
         return render_template('index.html', q=key_word, results=results,tags=tags,codes=codes,
                                error=error, engine_name=engine_name,
-                               search_info='', has_previous=has_previous,has_next=has_next,
+                               search_info='共'+str(length[0])+'个结果', has_previous=has_previous,has_next=has_next,
                                page_index=page_index,offset=offset)
         # else:
         # search_info = 'About ' + json_data['searchInformation']['formattedTotalResults'] + ' results (' + \
