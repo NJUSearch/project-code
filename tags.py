@@ -18,15 +18,17 @@ def find_tag(file, writer):
     #删除标点符号
     text = re.sub("[\s+\!\/\.-_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+", " ", text)
 
+	(filepath, filename) = os.path.split(file)
     #删除stop words（不确定是否需要？…先写上吧）
     stop_words = stopwords.words('english')
     words = text.split()
+	words.append(filename.split('.')[0])
     filtered_words = []
     for w in words:
         if w not in stop_words:
             filtered_words.append(w)
 
-    (filepath, filename) = os.path.split(file)
+    
     for w in filtered_words:
         word = w.lower()
         word = word.replace("-","").replace("_","")
