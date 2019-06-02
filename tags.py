@@ -22,7 +22,7 @@ def find_tag(file, writer):
     #删除stop words（不确定是否需要？…先写上吧）
     stop_words = stopwords.words('english')
     words = text.split()
-	words.append(filename.split('.')[0])
+	title=filename.split('.')[0]
     filtered_words = []
     for w in words:
         if w not in stop_words:
@@ -36,6 +36,11 @@ def find_tag(file, writer):
         if word in stem_tag_list:   #检测词语文本是否在stem_tag_list中。是则将对应的“原标签名” 写入
             writer.writerow([filename, tag_list[stem_tag_list.index(word)]])  #以“文件名+tag名”的格式写入csv数据文件
 
+	#文件名直接去掉_-加入tag中
+    t=title.lower()
+    t=t.replace("-","").replace("_","")
+    t=st.stem(t)
+    writer.writerow([filename, t])
 
 def search_file(file, writer):
     if os.path.isdir(file):
