@@ -18,32 +18,41 @@ def find_tag(file, writer):
     #删除标点符号
     text = re.sub("[\s+\!\/\.,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+", " ", text)
 
-	(filepath, filename) = os.path.split(file)
+    (filepath, filename) = os.path.split(file)
+
+
     #删除stop words（不确定是否需要？…先写上吧）
     stop_words = stopwords.words('english')
     words = text.split()
-	title=filename.split('.')[0]
+    title=filename.split('.')[0]
     filtered_words = []
     for w in words:
         if w not in stop_words:
             filtered_words.append(w)
 
-    
+    taglist=[]
+
     for w in filtered_words:
         word = w.lower()
         word = word.replace("-","").replace("_","")
         word = st.stem(word)
         if word in stem_tag_list:   #检测词语文本是否在stem_tag_list中。是则将对应的“原标签名” 写入
-            writer.writerow([filename, tag_list[stem_tag_list.index(word)]])  #以“文件名+tag名”的格式写入csv数据文件
+            taglist.append(stem_tag_list.index(word))
+            #writer.writerow([filename, tag_list[stem_tag_list.index(word)]])  #以“文件名+tag名”的格式写入csv数据文件
 
     #若文件名在tag中，则以现有的tag形式保存，否则直接去掉_-加入tag中
     t=title.lower()
     t=t.replace("-","").replace("_","")
     t=st.stem(t)
     if t in stem_tag_list:
-        writer.writerow([filename, tag_list[stem_tag_list.index(t)]])
+        taglist.append(stem_tag_list.index(t))
+        #writer.writerow([filename, tag_list[stem_tag_list.index(t)]])
     else:
-        writer.writerow([filename, t])
+        taglist.append(t)
+    #去重
+    taglist=list(set(taglist))
+    for item in taglist:
+        writer.writerow([filename, item])
 
 def search_file(file, writer):
     if os.path.isdir(file):
