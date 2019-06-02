@@ -16,7 +16,7 @@ def find_tag(file, writer):
     text = f.read()
 
     #删除标点符号
-    text = re.sub("[\s+\!\/\.-_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+", " ", text)
+    text = re.sub("[\s+\!\/\.,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+", " ", text)
 
 	(filepath, filename) = os.path.split(file)
     #删除stop words（不确定是否需要？…先写上吧）
