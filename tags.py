@@ -37,7 +37,7 @@ def find_tag(file, writer):
         word = word.replace("-","").replace("_","")
         word = st.stem(word)
         if word in stem_tag_list:   #检测词语文本是否在stem_tag_list中。是则将对应的“原标签名” 写入
-            taglist.append(stem_tag_list.index(word))
+            taglist.append(tag_list[stem_tag_list.index(word)])
             #writer.writerow([filename, tag_list[stem_tag_list.index(word)]])  #以“文件名+tag名”的格式写入csv数据文件
 
     #若文件名在tag中，则以现有的tag形式保存，否则直接去掉_-加入tag中
@@ -45,7 +45,7 @@ def find_tag(file, writer):
     t=t.replace("-","").replace("_","")
     t=st.stem(t)
     if t in stem_tag_list:
-        taglist.append(stem_tag_list.index(t))
+        taglist.append(tag_list[stem_tag_list.index(t)])
         #writer.writerow([filename, tag_list[stem_tag_list.index(t)]])
     else:
         taglist.append(t)
