@@ -845,6 +845,7 @@ def cpp_tag(text):
         n = name.find('{')
         if n==-1:
             print(name)
+            wordlist.append(name)
         else:
             name = name[:n].replace(' ', '').replace('\t', '').replace('\n', '')
             print(name)
@@ -855,22 +856,24 @@ def cpp_tag(text):
     res = pattern.findall(text)
     for r in res:
         print(r)
-        name = r.replace('//', '')
+        name = re.sub("[\s+\!\/\.,$%^*(+\"\'<>()#]+|[+——！，。？、~@#￥%……&*（）]+", " ", r)
+        print(name)
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(name)
+            wordlist.append(item)
 
     # 多行注释
     pattern = re.compile(r'\/\*[^\*]*\*\/')
     res = pattern.findall(text)
     for r in res:
         print(r)
-        name = r.replace('/*', '').replace('*/','')
+        name = re.sub("[\s+\!\/\.,$%^*(+\"\'<>()#]+|[+——！，。？、~@#￥%……&*（）]+", " ", r)
+        print(name)
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(name)
+            wordlist.append(item)
 
     # 函数名
     pattern = re.compile(r'[a-zA-Z0-9_]+[ \t]+[a-zA-Z0-9_]+[ \t\n]*\(.*\)[ \t\n]*{')
@@ -940,6 +943,119 @@ def cpp_tag(text):
 
     return wordlist
 
+def java_tag(text):
+    wordlist = []
+
+    pattern = re.compile(r'class[ \t\n]+[a-zA-Z0-9_]+')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = r.split(' ')[1]
+        print(name)
+        wordlist.append(name)
+
+    pattern = re.compile(r'[a-zA-Z0-9_]+[ \t]+[a-zA-Z0-9_]+[ \t\n]*\(.*\)[ \t\n]*{')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = r.split(' ')[1]
+        n = name.find('(')
+        if n == -1:
+            print(name)
+            wordlist.append(name)
+        else:
+            name = name[:n].replace(' ', '').replace('\t', '').replace('\n', '')
+            print(name)
+            wordlist.append(name)
+
+    pattern = re.compile(r'enum[ \t\n]+[a-zA-Z0-9_]+')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = r.split(' ')[1]
+        print(name)
+        wordlist.append(name)
+
+    pattern = re.compile(r'final[ \t\n]+[a-zA-Z0-9_]+[ \t\n]+[a-zA-Z0-9_]+')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = r.split(' ')[2]
+        print(name)
+        wordlist.append(name)
+
+    pattern = re.compile(r'package[ \t\n]+[a-zA-Z0-9_\.]+')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        t = r.split(' ')[1]
+        words = t.split('.')
+        for w in words:
+            print(w)
+            wordlist.append(w)
+
+    # 单行注释
+    pattern = re.compile(r'//.*')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = re.sub("[\s+\!\/\.,$%^*(+\"\'<>()#]+|[+——！，。？、~@#￥%……&*（）]+", " ", r)
+        print(name)
+        list = name.split()
+        for item in list:
+            print(item)
+            wordlist.append(item)
+
+    # 多行注释
+    pattern = re.compile(r'\/\*[^\*]*\*\/')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = re.sub("[\s+\!\/\.,$%^*(+\"\'<>()#]+|[+——！，。？、~@#￥%……&*（）]+", " ", r)
+        print(name)
+        list = name.split()
+        for item in list:
+            print(item)
+            wordlist.append(item)
+
+    print(wordlist)
+    return wordlist
+
+def python_tag(text):
+    wordlist = []
+
+    pattern = re.compile(r'def[ \t\n]+[a-zA-Z0-9_]+')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = r.split(' ')[1]
+        print(name)
+        wordlist.append(name)
+
+    pattern = re.compile(r'import[ \t\n]+[a-zA-Z0-9_\.]+')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        t = r.split(' ')[1]
+        words = t.split('.')
+        for w in words:
+            print(w)
+            wordlist.append(w)
+
+    # 单行注释
+    pattern = re.compile(r'#.*')
+    res = pattern.findall(text)
+    for r in res:
+        print(r)
+        name = re.sub("[\s+\!\/\.,$%^*(+\"\'<>()#]+|[+——！，。？、~@#￥%……&*（）]+", " ", r)
+        print(name)
+        list = name.split()
+        for item in list:
+            print(item)
+            wordlist.append(item)
+
+    return wordlist
+
 def find_tag(file, writer):
     f = open(file, "r", encoding="utf-8")
     text = f.read()
@@ -951,9 +1067,9 @@ def find_tag(file, writer):
     if suffix == 'cpp' or suffix == 'c' or suffix == 'h':
         wordlist = cpp_tag(text)
     elif suffix == 'java':
-        1
+        wordlist = java_tag(text)
     elif suffix == 'py':
-        1
+        wordlist = python_tag(text)
 
     taglist = []
     for w in wordlist:
@@ -966,14 +1082,15 @@ def find_tag(file, writer):
     t = title.lower()
     t = t.replace("-", "").replace("_", "")
     t = st.stem(t)
-    if t in stem_tag_list:  #检查文件名是否在列表中，
+    if t in stem_tag_list:  #检查文件名本身是否在列表中，
         taglist.append(tag_list[stem_tag_list.index(t)])
     else:
-        taglist.append(t)
+        1
+        #taglist.append(t)
 
     # 去重
     taglist = list(set(taglist))
-    for item in taglist:
+    for item in taglist:    #写入csv文件
         writer.writerow([filename, item])
 
 
