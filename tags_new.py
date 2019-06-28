@@ -861,7 +861,7 @@ def cpp_tag(text):
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(item)
+            #wordlist.append(item)
 
     # 多行注释
     pattern = re.compile(r'\/\*[^\*]*\*\/')
@@ -873,7 +873,7 @@ def cpp_tag(text):
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(item)
+            #wordlist.append(item)
 
     # 函数名
     pattern = re.compile(r'[a-zA-Z0-9_]+[ \t]+[a-zA-Z0-9_]+[ \t\n]*\(.*\)[ \t\n]*{')
@@ -1004,7 +1004,7 @@ def java_tag(text):
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(item)
+            #wordlist.append(item)
 
     # 多行注释
     pattern = re.compile(r'\/\*[^\*]*\*\/')
@@ -1016,7 +1016,7 @@ def java_tag(text):
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(item)
+            #wordlist.append(item)
 
     print(wordlist)
     return wordlist
@@ -1052,8 +1052,9 @@ def python_tag(text):
         list = name.split()
         for item in list:
             print(item)
-            wordlist.append(item)
+            #wordlist.append(item)
 
+    print(wordlist)
     return wordlist
 
 def find_tag(file, writer):
@@ -1077,21 +1078,30 @@ def find_tag(file, writer):
         word = word.replace("-", "").replace("_", "")#去连字符
         word = st.stem(word)#词干化
         if word in stem_tag_list:  # 检测词语文本是否在stem_tag_list中。是则将对应的“原标签名” 写入
-            taglist.append(tag_list[stem_tag_list.index(word)])
+            taglist.append(w + "#" + tag_list[stem_tag_list.index(word)])
 
     t = title.lower()
     t = t.replace("-", "").replace("_", "")
     t = st.stem(t)
     if t in stem_tag_list:  #检查文件名本身是否在列表中，
-        taglist.append(tag_list[stem_tag_list.index(t)])
+        taglist.append(title + "#" + tag_list[stem_tag_list.index(t)])
     else:
         1
         #taglist.append(t)
 
+    print(taglist)
     # 去重
     taglist = list(set(taglist))
+    lines = text.split('\n')
     for item in taglist:    #写入csv文件
-        writer.writerow([filename, item])
+        name = item.split('#')[0]
+        tag_name = item.split('#')[1]
+        line_no = 0
+        for line in lines:
+            if name in line:
+                line_no = lines.index(line)+1
+                break
+        writer.writerow([filename, tag_name, line_no, file.replace("G:/data/","")])
 
 
 def search_file(file, writer):
@@ -1127,7 +1137,7 @@ if __name__ == '__main__':
         ft = open("C:/Users/CJY/Desktop/Project_tags/" + str(projects_name[num], ) + ".csv", "w", newline='',
                   encoding="utf-8")  # 创建新的csv数据文件（用项目名为其命名）
         writer = csv.writer(ft)
-        writer.writerow(('file_name', 'tag_name'))  # 写入第一行标签信息
+        writer.writerow(('file_name', 'tag_name', 'line', 'path'))  # 写入第一行标签信息
         print(project)
         search_file(project, writer)
         ft.close()
