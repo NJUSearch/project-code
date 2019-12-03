@@ -6,6 +6,7 @@ from nltk.corpus import stopwords
 
 username = ""
 passwd = ""	#此处填写数据库连接密码
+data_path = ""  #此处填写本地存放原始项目文件的目录（最后的'/'不要遗漏）
 buffer = {}
 
 def Line():
@@ -34,7 +35,6 @@ def word_filter(input_str):
     return filtered_words
 
 
-#tags
 def get_desc(graph, key_word):
     Line()
     # print("(Input 'back' for return)")
@@ -85,7 +85,7 @@ def get_desc(graph, key_word):
     for n in range(0, len(tag_list)):   #将每个tag描述和其检索权值组合成序对
         tuple.append((tag_list[n], desc_list[n], weight[n]))
     tuple = sorted(tuple, key=lambda w: w[2], reverse=True) #按照权值降序排序
-    return tuple[:5]
+    return tuple[:20]
 
     #print(tuple)
     #print(tuple[0][0])
@@ -120,63 +120,64 @@ def get_desc(graph, key_word):
     # order = '1'
     # return order
 
-#results
-def get_QA(graph,key_word):
+def get_QA(graph,key_word,offset):
     Line()
     print("(Input 'back' for return)")
     # key_word = input("Please input your key word: ")
     # if (key_word == 'back'):
     #     order = ''
     #     return order
+    if key_word in buffer:
+        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+    else:
+        instr = """
+                MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + key_word + """.*'
+                RETURN b.question_title as title, b.question_body as body, b.question_id as id
+            """
+        data = graph.run(instr)
+        title_list = []
+        body_list = []
+        id_list = []
+        weight = []
+        for i in data:
+            # print(str(count) + ': ')
+            # print(i['title'])
+            title_list.append(i['title'])
+            body_list.append(i['body'])
+            id_list.append(i['id'])
+            weight.append(1)
 
-    instr = """
-            MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + key_word + """.*'
-            RETURN b.question_title as title, b.question_body as body, b.question_id as id
-        """
-    data = graph.run(instr)
-    title_list = []
-    body_list = []
-    id_list = []
-    weight = []
-    for i in data:
-        # print(str(count) + ': ')
-        # print(i['title'])
-        title_list.append(i['title'])
-        body_list.append(i['body'])
-        id_list.append(i['id'])
-        weight.append(1)
-
-    if (len(title_list) <= 0):
-        word_list = word_filter(key_word)  # .split()  # 将输入语句拆分，
-        for word in word_list:  # 每个词分别搜索
-            instr = """
-                    MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + word + """.*'
-                    RETURN b.question_title as title, b.question_body as body, b.question_id as id
-                """
-            data = graph.run(instr)
-            for i in data:
-                t = i['title']
-                if t in title_list:  # 如果匹配项已经在列表中
-                    weight[title_list.index(t)] += 1  # 给其对应权值加一
-                else:
-                    title_list.append(t)  # 否则，将新的项加入列表
-                    body_list.append(i['body'])
-                    id_list.append(i['id'])
-                    weight.append(1)
+        if (len(title_list) <= 0):
+            word_list = word_filter(key_word)  # .split()  # 将输入语句拆分，
+            for word in word_list:  # 每个词分别搜索
+                instr = """
+                        MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + word + """.*'
+                        RETURN b.question_title as title, b.question_body as body, b.question_id as id
+                    """
+                data = graph.run(instr)
+                for i in data:
+                    t = i['title']
+                    if t in title_list:  # 如果匹配项已经在列表中
+                        weight[title_list.index(t)] += 1  # 给其对应权值加一
+                    else:
+                        title_list.append(t)  # 否则，将新的项加入列表
+                        body_list.append(i['body'])
+                        id_list.append(i['id'])
+                        weight.append(1)
 
         # print(title_list)
         # print(body_list)
         # print(weight)
-    tuple = []
-    print(len(title_list))
-    print(len(body_list))
-    print(len(id_list))
-    for n in range(0, len(title_list)):
-        tuple.append((title_list[n], body_list[n], id_list[n], weight[n]))
-    tuple = sorted(tuple, key=lambda w: w[3], reverse=True)  # 按照权值降序排序
+        tuple = []
+        print(len(title_list))
+        print(len(body_list))
+        print(len(id_list))
+        for n in range(0, len(title_list)):
+            tuple.append((title_list[n], body_list[n], id_list[n], weight[n]))
+        tuple = sorted(tuple, key=lambda w: w[3], reverse=True)  # 按照权值降序排序
+        buffer[key_word] = tuple
+        return tuple[min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
 
-    #return tuple[min(offset,len(buffer[key_word])):min(offset+5,len(buffer[key_word]))]
-    return tuple[:5]
 
     # for n in range(0, len(tuple)):
     #     if (n >= 10):
@@ -239,16 +240,14 @@ def get_QA(graph,key_word):
     # order = '2'
     # return order
 
-#codes
-def get_question(cursor, key_word,offset,length):
+def get_question(cursor, key_word):
     Line()
     print("(Input 'back' for return)")
     # key_word = input("Please input your key word: ")
     # if (key_word == 'back'):
     #     order = ''
     #     return order
-    if key_word in buffer:
-        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+10,len(buffer[key_word]))]
+
     cursor.execute("SELECT DISTINCT language,question FROM rosseta WHERE question like '%" + key_word + "%' LIMIT 10")
     data = cursor.fetchall()
     language_list = []
@@ -279,10 +278,7 @@ def get_question(cursor, key_word,offset,length):
     for n in range(0, len(question_list)):
         tuple.append((question_list[n], language_list[n], weight[n]))
     tuple = sorted(tuple, key=lambda w: w[2], reverse=True)  # 按照权值降序排序
-    if len(length)==0:
-        length.append(len(tuple))
-    buffer[key_word] = tuple
-    return tuple[min(offset,len(buffer[key_word])):min(offset+10,len(buffer[key_word]))]
+    return tuple[:20]
 
     # for n in range(0, len(tuple)):
     #     if (n >= 10):
@@ -346,6 +342,30 @@ def get_question(cursor, key_word,offset,length):
     # order = '3'
     # return order
 
+def get_GithubCode(graph, key_word):
+    Line()
+    print(key_word)
+
+    instr = """
+        MATCH (a:File)-[r:has_tag]-(b:Tag) WHERE b.tag_name = '""" + key_word + """' 
+        RETURN a.file_name as file_name, a.file_path as file_path, r.lines as lines
+    """
+    data = graph.run(instr)
+    file_name_list = []
+    file_path_list = []
+    lines_list = []
+
+    for i in data:
+        file_name_list.append(i['file_name'])
+        file_path_list.append(i['file_path'])
+        lines_list.append(i['lines'])
+
+
+    tuple = []
+    for n in range(0, len(file_name_list)):
+        tuple.append((file_name_list[n], file_path_list[n], lines_list[n]))
+    return tuple[:20]
+
 def search():
     # 链接本地数据库
     # graph = Graph("http://localhost:7474", username="neo4j", password=passwd)
@@ -379,7 +399,20 @@ def search():
 
 if __name__ == '__main__':
     # search()
-    # graph = Graph("http://localhost:7474", username=username, password=passwd)
+    graph = Graph("http://localhost:7474", username=username, password=passwd)
     # print(get_QA(graph,'test'))
-    input_str = "How to sort an array."
-    print(word_filter(input_str))
+
+
+
+    # 以下部分测试从本地项目中读取出现过关键词‘com’的代码行
+    tupple = get_GithubCode(graph, 'com');
+
+    for item in tupple:
+        file = data_path + item[1]
+        f = open(file, "r", encoding="utf-8")
+        text = f.read().split('\n')
+
+        lines = item[2].split('#')
+        for line in lines:
+            print(text[int(line)-1])
+
