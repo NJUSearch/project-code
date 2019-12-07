@@ -65,6 +65,7 @@ def query():
         results = []
         tags = []
         codes=[]
+        projects=[]
         #tags
         for item in search.get_desc(graph,key_word):
             tag = {"title": add_bold_tag(key_word,item[0]),
@@ -99,9 +100,16 @@ def query():
 
         # projects
         for item in search.get_GithubCode(graph,key_word):
-            print(item)
+            link=item.split('#')
+            project={
+                "title": str(item[1]),
+                "link": 'https://github.com/' + str(link[0]),
+                "displayLink": 'https://github.com/' + str(link[0]),
+                "snippet": 'https://github.com/' + str(link[0])
+            }
+            projects.append(project)
 
-        return render_template('index.html', q=key_word, results=results,tags=tags,codes=codes,
+        return render_template('index.html', q=key_word, results=results,tags=tags,codes=codes,projects=projects,
                                error=error, engine_name=engine_name,
                                search_info='共'+str(length[0])+'个结果', has_previous=has_previous,has_next=has_next,
                                page_index=page_index,offset=offset)
