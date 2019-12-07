@@ -16,8 +16,7 @@ def color(str):
     print(str, end='')
 
 def word_filter(input_str):
-    #nltk.download('stopwords')  #初次执行的时候需运行此行（取消注释），以安装stopwords。之后执行不再需要运行此行。
-
+    #nltk.download('stopwords')  # 初次执行的时候需运行此行（取消注释），以安装stopwords。之后执行不再需要运行此行。
     #删去文本中全部标点符号
     input_str = re.sub("[\s+\.\!\/_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*（）]+", " ",input_str)
 
@@ -85,7 +84,7 @@ def get_desc(graph, key_word):
     for n in range(0, len(tag_list)):   #将每个tag描述和其检索权值组合成序对
         tuple.append((tag_list[n], desc_list[n], weight[n]))
     tuple = sorted(tuple, key=lambda w: w[2], reverse=True) #按照权值降序排序
-    return tuple[:20]
+    return tuple[:5]
 
     #print(tuple)
     #print(tuple[0][0])
@@ -120,21 +119,25 @@ def get_desc(graph, key_word):
     # order = '1'
     # return order
 
-def get_QA(graph,key_word,offset):
+def get_QA(graph,key_word,offset,length):
     Line()
     print("(Input 'back' for return)")
     # key_word = input("Please input your key word: ")
     # if (key_word == 'back'):
     #     order = ''
     #     return order
+
     if key_word in buffer:
-        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+
+        length.append(len(buffer[key_word]))
+        return buffer[key_word][min(offset,len(buffer[key_word])):min(offset+15,len(buffer[key_word]))]
     else:
         instr = """
                 MATCH (b:Question) WHERE b.question_title =~ '(?i).*""" + key_word + """.*'
                 RETURN b.question_title as title, b.question_body as body, b.question_id as id
             """
         data = graph.run(instr)
+
         title_list = []
         body_list = []
         id_list = []
@@ -175,8 +178,11 @@ def get_QA(graph,key_word,offset):
         for n in range(0, len(title_list)):
             tuple.append((title_list[n], body_list[n], id_list[n], weight[n]))
         tuple = sorted(tuple, key=lambda w: w[3], reverse=True)  # 按照权值降序排序
+
+        if len(length)==0:
+            length.append(len(tuple))
         buffer[key_word] = tuple
-        return tuple[min(offset,len(buffer[key_word])):min(offset+20,len(buffer[key_word]))]
+        return tuple[min(offset,len(buffer[key_word])):min(offset+15,len(buffer[key_word]))]
 
 
     # for n in range(0, len(tuple)):
@@ -278,7 +284,7 @@ def get_question(cursor, key_word):
     for n in range(0, len(question_list)):
         tuple.append((question_list[n], language_list[n], weight[n]))
     tuple = sorted(tuple, key=lambda w: w[2], reverse=True)  # 按照权值降序排序
-    return tuple[:20]
+    return tuple[:5]
 
     # for n in range(0, len(tuple)):
     #     if (n >= 10):
@@ -364,7 +370,7 @@ def get_GithubCode(graph, key_word):
     tuple = []
     for n in range(0, len(file_name_list)):
         tuple.append((file_name_list[n], file_path_list[n], lines_list[n]))
-    return tuple[:20]
+    return tuple[:5]
 
 def search():
     # 链接本地数据库
@@ -399,11 +405,9 @@ def search():
 
 if __name__ == '__main__':
     # search()
+
     graph = Graph("http://localhost:7474", username=username, password=passwd)
     # print(get_QA(graph,'test'))
-
-
-
     # 以下部分测试从本地项目中读取出现过关键词‘com’的代码行
     tupple = get_GithubCode(graph, 'com');
 

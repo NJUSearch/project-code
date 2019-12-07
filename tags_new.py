@@ -1119,70 +1119,70 @@ def search_file(file, writer):
 
 
 if __name__ == '__main__':
-    print(tag_list)
-    print(len(tag_list))
-
-    for tag in tag_list:  # 将原有的tag统一删去标点，并进行词干化，保存在stem_tag列表中
-        stem_tag_list.append(st.stem(tag.replace("-", "").replace("_", "").replace(".", "")))
-
-    print(stem_tag_list)
-    print(len(stem_tag_list))
-
-    path = 'G:/data'  # 此处填github代码存放的路径
-    projects_name = os.listdir(path)
-    projects = [path + '/' + i for i in projects_name]
-    num = 0
-    for project in projects:
-        # 此处填输出文件路径
-        ft = open("C:/Users/CJY/Desktop/Project_tags/" + str(projects_name[num], ) + ".csv", "w", newline='',
-                  encoding="utf-8")  # 创建新的csv数据文件（用项目名为其命名）
-        writer = csv.writer(ft)
-        writer.writerow(('file_name', 'tag_name', 'line', 'path'))  # 写入第一行标签信息
-        print(project)
-        search_file(project, writer)
-        ft.close()
-        num = num + 1
-
-
-    # # 以下用于将文件数据导入neo4j
-    # graph = Graph(
-    #     "http://localhost:7474",
-    #     username="",
-    #     password=""
-    # )
+    # print(tag_list)
+    # print(len(tag_list))
     #
-    # path = "C:/Users/CJY/Desktop/Project_tags"
-    # files = os.listdir(path)
-    # files = [path + '/' + i for i in files]
+    # for tag in tag_list:  # 将原有的tag统一删去标点，并进行词干化，保存在stem_tag列表中
+    #     stem_tag_list.append(st.stem(tag.replace("-", "").replace("_", "").replace(".", "")))
     #
-    # for file_path in files:
-    #     print(file_path)
-    #     (filepath, tempfilename) = os.path.split(file_path)
-    #     (project_name, extension) = os.path.splitext(tempfilename)
-    #     #print(filepath+"  "+filename+"  "+extension)
-    #     f = open(file_path, 'r', encoding='utf-8')
-    #     csv_reader_lines = csv.reader(f)
+    # print(stem_tag_list)
+    # print(len(stem_tag_list))
     #
-    #     p_node = Node("Project", project_name=project_name)#创建项目节点
-    #     graph.create(p_node)
-    #
-    #     next(csv_reader_lines)  # 跳过第一行的标签信息
-    #     file_list = []
-    #     count = 1
-    #     for line in csv_reader_lines:
-    #         print(str(count) + str(line))
-    #         file_name = line[0]
-    #         if file_name not in file_list:
-    #             f_node = Node("File", file_name = file_name, parent_project = project_name)
-    #             graph.create(f_node)#创建文件结点
-    #             rel = Relationship(p_node, "contains", f_node)
-    #             graph.create(rel)#创建项目“包含”文件关系
-    #             file_list.append(file_name)
-    #         tag_name = line[1]
-    #         instr = """
-    #             match (a:File),(b:Tag)
-    #             where a.file_name = '""" + file_name + """' and b.tag_name = '""" + tag_name + """'
-    #             create (a)-[r:has_tag]->(b)
-    #         """
-    #         graph.run(instr)#创建文件到标签的has_tag关系
-    #         count = count + 1
+    # path = 'G:/data'  # 此处填github代码存放的路径
+    # projects_name = os.listdir(path)
+    # projects = [path + '/' + i for i in projects_name]
+    # num = 0
+    # for project in projects:
+    #     # 此处填输出文件路径
+    #     ft = open("C:/Users/CJY/Desktop/Project_tags/" + str(projects_name[num], ) + ".csv", "w", newline='',
+    #               encoding="utf-8")  # 创建新的csv数据文件（用项目名为其命名）
+    #     writer = csv.writer(ft)
+    #     writer.writerow(('file_name', 'tag_name', 'line', 'path'))  # 写入第一行标签信息
+    #     print(project)
+    #     search_file(project, writer)
+    #     ft.close()
+    #     num = num + 1
+
+
+    # 以下用于将文件数据导入neo4j
+    graph = Graph(
+        "http://localhost:7474",
+        username="neo4j",
+        password="123456"
+    )
+
+    path = "D:/陈剑豪/学习/码农搜索引擎/Project_tags"
+    files = os.listdir(path)
+    files = [path + '/' + i for i in files]
+
+    for file_path in files:
+        # print(file_path)
+        (filepath, tempfilename) = os.path.split(file_path)
+        (project_name, extension) = os.path.splitext(tempfilename)
+        #print(filepath+"  "+filename+"  "+extension)
+        f = open(file_path, 'r', encoding='utf-8')
+        csv_reader_lines = csv.reader(f)
+
+        p_node = Node("Project", project_name=project_name)#创建项目节点
+        graph.create(p_node)
+
+        next(csv_reader_lines)  # 跳过第一行的标签信息
+        file_list = []
+        count = 1
+        for line in csv_reader_lines:
+            # print(str(count) + str(line))
+            file_name = line[0]
+            if file_name not in file_list:
+                f_node = Node("File", file_name = file_name, parent_project = project_name)
+                graph.create(f_node)#创建文件结点
+                rel = Relationship(p_node, "contains", f_node)
+                graph.create(rel)#创建项目“包含”文件关系
+                file_list.append(file_name)
+            tag_name = line[1]
+            instr = """
+                match (a:File),(b:Tag)
+                where a.file_name = \"""" + file_name + """\" and b.tag_name = \"""" + tag_name + """\"
+                create (a)-[r:has_tag]->(b)
+            """
+            graph.run(instr)#创建文件到标签的has_tag关系
+            count = count + 1

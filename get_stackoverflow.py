@@ -12,17 +12,17 @@ from py2neo import Graph, Node, Relationship
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0'}
 
 def initialize_csv():   #初始化csv文件
-    qfile = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/question.csv','w',newline='')
+    qfile = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/question.csv','w',newline='')
     writer = csv.writer(qfile)
     writer.writerow(('question_id','question_title','question_body','question_vote'))
     qfile.close()
 
-    afile = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/answer.csv', 'w', newline='')
+    afile = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/answer.csv', 'w', newline='')
     writer = csv.writer(afile)
     writer.writerow(('answer_id', 'answer_body', 'answer_vote','question_id'))
     afile.close()
 
-    tfile = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/tag.csv', 'w', newline='')
+    tfile = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/tag.csv', 'w', newline='')
     writer = csv.writer(tfile)
     writer.writerow(('tag_name', 'tag_description', 'question_id'))
     tfile.close()
@@ -43,7 +43,7 @@ def analyze(html, question_id):
     question_vote = qvote.get_text()
     print("question vote: "+str(question_vote)+'\n')
 
-    with open("C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/question.csv",'a',newline='',encoding="utf-8") as qfile:
+    with open("C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/question.csv",'a',newline='',encoding="utf-8") as qfile:
         writer = csv.writer(qfile)
         writer.writerow([question_id,question_title['content'],question_body.get_text(),question_vote])
 
@@ -60,7 +60,7 @@ def analyze(html, question_id):
         answer_id = id['data-answerid']
         print("answer_id: "+str(answer_id)+"  vote: "+answer_vote.get_text())
         print(answer_body.get_text())
-        with open("C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/answer.csv",'a',newline='',encoding="utf-8") as afile:
+        with open("C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/answer.csv",'a',newline='',encoding="utf-8") as afile:
             writer = csv.writer(afile)
             writer.writerow([answer_id, answer_body.get_text(), answer_vote.get_text(), question_id])
 
@@ -77,7 +77,7 @@ def analyze(html, question_id):
         tag_description = soup_tag.find("div", attrs={'class':'welovestackoverflow'})
         #获取标签的维基简介
         print(tag_description.p.get_text())
-        with open("C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/tag.csv",'a',newline='',encoding="utf-8") as tfile:
+        with open("C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/tag.csv",'a',newline='',encoding="utf-8") as tfile:
             writer = csv.writer(tfile)
             writer.writerow([tag_name, tag_description.p.get_text(), question_id])
 
@@ -92,7 +92,7 @@ def save_data():
     instr = "MATCH (n) DELETE n"  # 删除所有节点
     graph.run(instr)
 
-    f = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/question.csv', 'r', encoding='utf-8')
+    f = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/question.csv', 'r', encoding='utf-8')
     csv_reader_lines = csv.reader(f)
     next(csv_reader_lines)
     count = 1
@@ -103,7 +103,7 @@ def save_data():
         graph.create(node)
         count = count + 1
 
-    f = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/answer.csv', 'r', encoding='utf-8')
+    f = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/answer.csv', 'r', encoding='utf-8')
     csv_reader_lines = csv.reader(f)
     next(csv_reader_lines)
     count = 1
@@ -114,7 +114,7 @@ def save_data():
         count = count + 1
 
     tag_list = []
-    f = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/tag.csv', 'r', encoding='utf-8')
+    f = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/tag.csv', 'r', encoding='utf-8')
     csv_reader_lines = csv.reader(f)
     next(csv_reader_lines)
     count = 1
@@ -128,7 +128,7 @@ def save_data():
             graph.create(node)
             count = count + 1
 
-    f = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/answer.csv', 'r', encoding='utf-8')
+    f = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/answer.csv', 'r', encoding='utf-8')
     csv_reader_lines = csv.reader(f)
     next(csv_reader_lines)
     count = 1
@@ -144,7 +144,7 @@ def save_data():
             """
         graph.run(instr)
 
-    f = open('C:/Users/89597/.Neo4jDesktop/neo4jDatabases/database-4192cdaf-affe-4346-84aa-4250b1526a4b/installation-3.4.1/import/tag.csv', 'r', encoding='utf-8')
+    f = open('C:/Users/lenovo/.Neo4jDesktop/neo4jDatabases/database-6fcac2d7-02fa-494d-a484-e782161e2887/installation-3.5.6/import/tag.csv', 'r', encoding='utf-8')
     csv_reader_lines = csv.reader(f)
     next(csv_reader_lines)
     count = 1
@@ -159,7 +159,6 @@ def save_data():
                 create (a)-[r:has_tag]->(b)
             """
         graph.run(instr)
-
 
 if __name__=='__main__':
     '''

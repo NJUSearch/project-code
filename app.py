@@ -44,7 +44,7 @@ def query():
         #start_index = request.args.get('start')
         offset=request.args.get('offset')
         offset=int(offset)
-        page_index=int(offset/10+1)
+        page_index=int(offset/15+1)
 
         #是否能往前翻
         if 1==page_index:
@@ -75,29 +75,31 @@ def query():
             tags.append(tag)
 
         # results
-
-        for item in search.get_QA(graph,key_word):
+        # 是否能往后翻
+        length = []
+        has_next = 1
+        for item in search.get_QA(graph,key_word,int(offset),length):
               result = {"title": add_bold_tag(key_word,item[0]),
                        "link": 'https://stackoverflow.com/questions/'+str(item[2]),
                        "displayLink": 'https://stackoverflow.com/questions/'+str(item[2]),
                        "snippet":add_bold_tag(key_word,item[1][:200])# 描述字段的长度
                        }
               results.append(result)
-
-        #是否能往后翻
-        length=[]
-        has_next=1
+        if offset+14>=length[0]:
+            has_next=0;
 
         # codes
-        for item in search.get_question(cursor, key_word,int(offset),length):
+        for item in search.get_question(cursor, key_word):
             code = {"title": add_bold_tag(key_word,item[0]),
                       "link": 'http://rosettacode.org/wiki/'+str(item[0])+'#'+str(item[1]),
                       "displayLink": 'http://rosettacode.org/wiki/'+str(item[0])+'#'+str(item[1]),
                       "snippet": add_bold_tag(key_word,item[1])
                       }
             codes.append(code)
-        if offset+9>=length[0]:
-            has_next=0;
+
+        # projects
+        for item in search.get_GithubCode(graph,key_word):
+            print(item)
 
         return render_template('index.html', q=key_word, results=results,tags=tags,codes=codes,
                                error=error, engine_name=engine_name,
@@ -133,12 +135,9 @@ def query():
     #         has_previous = 1
     #         search_info =  "Page " + str(current_start_index/10+1) + ' of About ' + json_data['searchInformation']['formattedTotalResults'] + ' results (' + json_data['searchInformation']['formattedSearchTime'] + ' seconds)'
 
-
-
 @app.errorhandler(404)
 def not_found(error):
     return render_template('404.html'), 404
-
 
 if __name__ == '__main__':
     app.run(debug=True)

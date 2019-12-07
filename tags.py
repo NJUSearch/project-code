@@ -62,9 +62,9 @@ def search_file(file, writer):
             search_file(subfile, writer)
     else:
         print("    "+str(file))
-		try:
-			find_tag(file, writer)
-		except Exception as e:
+        try:
+            find_tag(file, writer)
+        except Exception as e:
 			print(e)
 		
 
