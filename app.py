@@ -22,11 +22,11 @@ def add_bold_tag(query, text):
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
-passwd = "123456"
-graph = Graph("http://localhost:7474", username="neo4j", password=passwd)
+passwd = ""
+graph = Graph("http://localhost:7474", username="", password=passwd)
 
-db = pymysql.connect(host='localhost', port=3306, user='root',
-                             passwd="980306", database='resource')
+db = pymysql.connect(host='localhost', port=3306, user='',
+                             passwd=passwd, database='')
 cursor = db.cursor()
 
 @app.route('/')
@@ -100,12 +100,12 @@ def query():
 
         # projects
         for item in search.get_GithubCode(graph,key_word):
-            link=item.split('#')
+            link=item[1].split('#')[0]+"/"+item[1].split('#')[1].split('/')[0]
             project={
-                "title": str(item[1]),
-                "link": 'https://github.com/' + str(link[0]),
-                "displayLink": 'https://github.com/' + str(link[0]),
-                "snippet": 'https://github.com/' + str(link[0])
+                "title": str(item[1].replace("#","/")),
+                "link": 'https://github.com/' + str(link),
+                "displayLink": 'https://github.com/' + str(link),
+                "snippet": "line"+str(item[2])
             }
             projects.append(project)
 
